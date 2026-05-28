@@ -1,16 +1,16 @@
 services:
   grafana-lgtm:
-    image: 'grafana/otel-lgtm:latest'
+    image: 'grafana/otel-lgtm:0.28.0'
     ports:
       - '3000:3000'
       - '4317'
-      - '4318'
+      - '4318:4318'
   mysql:
-    image: 'mysql:latest'
+    image: 'mysql:9.7.0'
     environment:
-      - 'MYSQL_DATABASE=mydatabase'
-      - 'MYSQL_PASSWORD=secret'
-      - 'MYSQL_ROOT_PASSWORD=verysecret'
-      - 'MYSQL_USER=myuser'
+      - 'MYSQL_DATABASE=commerce'
+      - 'MYSQL_PASSWORD=local_password'
+      - 'MYSQL_ROOT_PASSWORD=root_password'
+      - 'MYSQL_USER=local_user'
     ports:
-      - '3306'
+      - '3306:3306'
