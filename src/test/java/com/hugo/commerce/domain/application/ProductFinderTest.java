@@ -153,4 +153,33 @@ class ProductFinderTest {
             .isInstanceOf(CoreException.class)
             .satisfies(e -> assertThat(((CoreException) e).getErrorType()).isEqualTo(ErrorType.NOT_FOUND));
     }
+
+    @Test
+    @DisplayName("INACTIVE 상품은 목록 조회에서 제외")
+    void excludesInactiveProducts_whenFindingByCategoryId() {
+        // given
+        Long categoryId = 1L;
+        productRepository.save(ProductFixture.create(1L));
+        productRepository.save(ProductFixture.inactive(2L));
+        productCategoryRepository.save(categoryId, 1L);
+        productCategoryRepository.save(categoryId, 2L);
+
+        // when
+        Page<Product> result = productFinder.findProductsByCategoryId(categoryId, new PageParam(null, 10));
+
+        // then
+        assertThat(result.content()).extracting(Product::id).containsExactly(1L);
+    }
+
+    @Test
+    @DisplayName("INACTIVE 상품 ID로 단건 조회하면 PRODUCT_UNAVAILABLE 예외 발생")
+    void throwsProductUnavailable_whenProductIsInactive() {
+        // given
+        productRepository.save(ProductFixture.inactive(1L));
+
+        // when & then
+        assertThatThrownBy(() -> productFinder.findProductById(1L))
+            .isInstanceOf(CoreException.class)
+            .satisfies(e -> assertThat(((CoreException) e).getErrorType()).isEqualTo(ErrorType.PRODUCT_UNAVAILABLE));
+    }
 }

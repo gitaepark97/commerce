@@ -23,4 +23,20 @@ public class ProductFixture {
             ProductStatus.ACTIVE
         );
     }
+
+    public static Product inactive(Long id) {
+        return new Product(
+            id,
+            "상품 " + id,
+            "https://example.com/thumbnail/" + id + ".jpg",
+            null,
+            null,
+            new Price(
+                BigDecimal.valueOf(10000),
+                BigDecimal.valueOf(12000),
+                BigDecimal.valueOf(9000)
+            ),
+            ProductStatus.INACTIVE
+        );
+    }
 }

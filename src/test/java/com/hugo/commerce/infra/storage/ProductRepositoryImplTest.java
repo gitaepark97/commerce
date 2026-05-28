@@ -1,5 +1,6 @@
 package com.hugo.commerce.infra.storage;
 
+import com.hugo.commerce.domain.enums.ProductStatus;
 import com.hugo.commerce.domain.model.Product;
 import com.hugo.commerce.domain.port.ProductRepository;
 import com.hugo.commerce.infra.storage.fixture.EntityFixture;
@@ -24,13 +25,13 @@ class ProductRepositoryImplTest {
 
     @Test
     @DisplayName("여러 ID로 ACTIVE 상품 목록 반환")
-    void findAllById_returnsActiveProducts() {
+    void findByIds_returnsActiveProducts() {
         // given
         productJpaRepository.save(EntityFixture.activeProduct(1L));
         productJpaRepository.save(EntityFixture.activeProduct(2L));
 
         // when
-        List<Product> result = productRepository.findAllById(List.of(1L, 2L));
+        List<Product> result = productRepository.findByIds(List.of(1L, 2L), ProductStatus.VISIBLE);
 
         // then
         assertThat(result).hasSize(2);
@@ -39,13 +40,28 @@ class ProductRepositoryImplTest {
 
     @Test
     @DisplayName("DELETED 상태 상품은 목록 조회에서 제외")
-    void findAllById_excludesDeletedProducts() {
+    void findByIds_excludesDeletedProducts() {
         // given
         productJpaRepository.save(EntityFixture.activeProduct(1L));
         productJpaRepository.save(EntityFixture.deletedProduct(2L));
 
         // when
-        List<Product> result = productRepository.findAllById(List.of(1L, 2L));
+        List<Product> result = productRepository.findByIds(List.of(1L, 2L), ProductStatus.VISIBLE);
+
+        // then
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).id()).isEqualTo(1L);
+    }
+
+    @Test
+    @DisplayName("ProductStatus.INACTIVE 상품은 목록 조회에서 제외")
+    void findByIds_excludesInactiveProducts() {
+        // given
+        productJpaRepository.save(EntityFixture.activeProduct(1L));
+        productJpaRepository.save(EntityFixture.inactiveProduct(2L));
+
+        // when
+        List<Product> result = productRepository.findByIds(List.of(1L, 2L), ProductStatus.VISIBLE);
 
         // then
         assertThat(result).hasSize(1);
@@ -54,12 +70,12 @@ class ProductRepositoryImplTest {
 
     @Test
     @DisplayName("존재하지 않는 ID는 목록 조회 결과에 포함되지 않음")
-    void findAllById_ignoresMissingIds() {
+    void findByIds_ignoresMissingIds() {
         // given
         productJpaRepository.save(EntityFixture.activeProduct(1L));
 
         // when
-        List<Product> result = productRepository.findAllById(List.of(1L, 999L));
+        List<Product> result = productRepository.findByIds(List.of(1L, 999L), ProductStatus.VISIBLE);
 
         // then
         assertThat(result).hasSize(1);

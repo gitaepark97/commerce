@@ -1,5 +1,6 @@
 package com.hugo.commerce.domain.application;
 
+import com.hugo.commerce.domain.enums.ProductStatus;
 import com.hugo.commerce.domain.model.Product;
 import com.hugo.commerce.domain.model.ProductDetail;
 import com.hugo.commerce.domain.port.ProductCategoryRepository;
@@ -38,7 +39,7 @@ class ProductFinder {
         boolean hasNext = productIds.size() > pageParam.size();
         List<Long> pagedIds = productIds.stream().limit(pageParam.size()).toList();
 
-        Map<Long, Product> productMap = productRepository.findAllById(pagedIds)
+        Map<Long, Product> productMap = productRepository.findByIds(pagedIds, ProductStatus.VISIBLE)
             .stream()
             .collect(Collectors.toMap(Product::id, Function.identity()));
 
@@ -54,6 +55,10 @@ class ProductFinder {
     ProductDetail findProductById(Long id) {
         var product = productRepository.findById(id)
             .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND));
+
+        if (product.status() == ProductStatus.INACTIVE) {
+            throw new CoreException(ErrorType.PRODUCT_UNAVAILABLE);
+        }
 
         var options = productOptionRepository.findByProductId(id);
         var sections = productSectionRepository.findByProductId(id);

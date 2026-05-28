@@ -1,5 +1,6 @@
 package com.hugo.commerce.infra.storage;
 
+import com.hugo.commerce.domain.enums.ProductStatus;
 import com.hugo.commerce.domain.model.Product;
 import com.hugo.commerce.domain.port.ProductRepository;
 import com.hugo.commerce.infra.storage.entity.EntityStatus;
@@ -19,8 +20,8 @@ public class ProductRepositoryImpl implements ProductRepository {
     private final ProductJpaRepository productJpaRepository;
 
     @Override
-    public List<Product> findAllById(Collection<Long> ids) {
-        return productJpaRepository.findAllByIdInAndStatus(ids, EntityStatus.ACTIVE)
+    public List<Product> findByIds(Collection<Long> ids, Collection<ProductStatus> statuses) {
+        return productJpaRepository.findAllByIdInAndStatusAndProductStatusIn(ids, EntityStatus.ACTIVE, statuses)
             .stream()
             .map(ProductEntity::toDomain)
             .toList();

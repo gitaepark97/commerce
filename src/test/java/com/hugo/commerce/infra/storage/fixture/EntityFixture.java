@@ -25,6 +25,17 @@ public class EntityFixture {
             .build();
     }
 
+    public static ProductEntity inactiveProduct(Long id) {
+        return ProductEntity.builder()
+            .id(id)
+            .status(EntityStatus.ACTIVE)
+            .name("상품 " + id)
+            .thumbnailUrl("https://example.com/" + id + ".jpg")
+            .price(DEFAULT_PRICE)
+            .productStatus(ProductStatus.INACTIVE)
+            .build();
+    }
+
     public static ProductEntity deletedProduct(Long id) {
         return ProductEntity.builder()
             .id(id)

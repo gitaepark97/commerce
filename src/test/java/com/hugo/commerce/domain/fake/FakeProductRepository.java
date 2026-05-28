@@ -1,5 +1,6 @@
 package com.hugo.commerce.domain.fake;
 
+import com.hugo.commerce.domain.enums.ProductStatus;
 import com.hugo.commerce.domain.model.Product;
 import com.hugo.commerce.domain.port.ProductRepository;
 
@@ -14,10 +15,11 @@ public class FakeProductRepository implements ProductRepository {
     }
 
     @Override
-    public List<Product> findAllById(Collection<Long> ids) {
+    public List<Product> findByIds(Collection<Long> ids, Collection<ProductStatus> statuses) {
         return ids.stream()
             .map(store::get)
             .filter(Objects::nonNull)
+            .filter(p -> statuses.contains(p.status()))
             .toList();
     }
 
