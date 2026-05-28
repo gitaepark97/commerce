@@ -14,6 +14,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
 
@@ -60,6 +61,12 @@ class ApiControllerAdvice {
     ResponseEntity<ApiResponse<Object>> handleBadRequestException(Exception e) {
         log.warn("BadRequestException [{}] : {}", e.getClass().getSimpleName(), e.getMessage());
         return errorResponse(ErrorType.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    ResponseEntity<ApiResponse<Object>> handleNoResourceFoundException(NoResourceFoundException e) {
+        log.warn("NoResourceFoundException : {}", e.getMessage());
+        return errorResponse(ErrorType.NOT_FOUND);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
