@@ -161,6 +161,21 @@ class ProductControllerTest extends RestDocsSupport {
     }
 
     @Test
+    @DisplayName("INACTIVE 상품 ID로 410 반환")
+    void returnsGone_whenProductIsUnavailable() throws Exception {
+        // given
+        when(productService.getProduct(1L)).thenThrow(new CoreException(ErrorType.PRODUCT_UNAVAILABLE));
+
+        // when
+        var result = mockMvc.perform(get("/api/v1/products/{productId}", 1L));
+
+        // then
+        result.andExpect(status().isGone())
+            .andExpect(jsonPath("$.result").value("ERROR"))
+            .andExpect(jsonPath("$.error.code").value("PRODUCT_UNAVAILABLE"));
+    }
+
+    @Test
     @DisplayName("숫자가 아닌 상품 ID로 400 반환")
     void returnsBadRequest_whenProductIdIsNotNumber() throws Exception {
         // when & then
