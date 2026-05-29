@@ -12,6 +12,7 @@ public enum ErrorType {
     UNAUTHORIZED(401, "인증에 실패했습니다.", LogLevel.WARN),
     FORBIDDEN(403, "접근 권한이 없습니다.", LogLevel.WARN),
     NOT_FOUND(404, "요청한 리소스를 찾을 수 없습니다.", LogLevel.WARN),
+    PRODUCT_UNAVAILABLE(410, "더 이상 판매하지 않는 상품입니다.", LogLevel.WARN),
     METHOD_NOT_ALLOWED(405, "지원하지 않는 HTTP 메서드입니다.", LogLevel.WARN),
     ;
 

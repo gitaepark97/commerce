@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 
+import org.springframework.web.servlet.resource.NoResourceFoundException;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -135,6 +137,17 @@ class ApiControllerAdviceTest {
     }
 
     @Test
+    @DisplayName("존재하지 않는 URL 요청 시 404 반환")
+    void returns404_whenNoResourceFound() throws Exception {
+        // when
+        var result = mockMvc.perform(get("/test/not-found"));
+
+        // then
+        result.andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.error.code").value("NOT_FOUND"));
+    }
+
+    @Test
     @DisplayName("지원하지 않는 HTTP 메서드 요청 시 405 반환")
     void returns405_whenHttpMethodNotSupported() throws Exception {
         // when
@@ -192,6 +205,11 @@ class ApiControllerAdviceTest {
 
         @GetMapping("/path/{id}")
         void path(@PathVariable Long id) {
+        }
+
+        @GetMapping("/not-found")
+        void notFound() throws NoResourceFoundException {
+            throw new NoResourceFoundException(org.springframework.http.HttpMethod.GET, "/test/not-found", "/test/not-found");
         }
 
         @GetMapping("/error")
