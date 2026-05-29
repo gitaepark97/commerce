@@ -3,7 +3,7 @@ package com.hugo.commerce.infra.storage;
 import com.hugo.commerce.domain.enums.ProductStatus;
 import com.hugo.commerce.domain.model.Product;
 import com.hugo.commerce.domain.port.ProductRepository;
-import com.hugo.commerce.infra.storage.fixture.EntityFixture;
+import com.hugo.commerce.infra.storage.fixture.ProductEntityFixture;
 import com.hugo.commerce.infra.storage.repository.ProductJpaRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,8 +27,8 @@ class ProductRepositoryImplTest {
     @DisplayName("여러 ID로 ACTIVE 상품 목록 반환")
     void findByIds_returnsActiveProducts() {
         // given
-        productJpaRepository.save(EntityFixture.activeProduct(1L));
-        productJpaRepository.save(EntityFixture.activeProduct(2L));
+        productJpaRepository.save(ProductEntityFixture.active(1L));
+        productJpaRepository.save(ProductEntityFixture.active(2L));
 
         // when
         List<Product> result = productRepository.findByIds(List.of(1L, 2L), ProductStatus.VISIBLE);
@@ -42,8 +42,8 @@ class ProductRepositoryImplTest {
     @DisplayName("DELETED 상태 상품은 목록 조회에서 제외")
     void findByIds_excludesDeletedProducts() {
         // given
-        productJpaRepository.save(EntityFixture.activeProduct(1L));
-        productJpaRepository.save(EntityFixture.deletedProduct(2L));
+        productJpaRepository.save(ProductEntityFixture.active(1L));
+        productJpaRepository.save(ProductEntityFixture.deleted(2L));
 
         // when
         List<Product> result = productRepository.findByIds(List.of(1L, 2L), ProductStatus.VISIBLE);
@@ -57,8 +57,8 @@ class ProductRepositoryImplTest {
     @DisplayName("ProductStatus.INACTIVE 상품은 목록 조회에서 제외")
     void findByIds_excludesInactiveProducts() {
         // given
-        productJpaRepository.save(EntityFixture.activeProduct(1L));
-        productJpaRepository.save(EntityFixture.inactiveProduct(2L));
+        productJpaRepository.save(ProductEntityFixture.active(1L));
+        productJpaRepository.save(ProductEntityFixture.inactive(2L));
 
         // when
         List<Product> result = productRepository.findByIds(List.of(1L, 2L), ProductStatus.VISIBLE);
@@ -72,7 +72,7 @@ class ProductRepositoryImplTest {
     @DisplayName("존재하지 않는 ID는 목록 조회 결과에 포함되지 않음")
     void findByIds_ignoresMissingIds() {
         // given
-        productJpaRepository.save(EntityFixture.activeProduct(1L));
+        productJpaRepository.save(ProductEntityFixture.active(1L));
 
         // when
         List<Product> result = productRepository.findByIds(List.of(1L, 999L), ProductStatus.VISIBLE);
@@ -85,7 +85,7 @@ class ProductRepositoryImplTest {
     @DisplayName("ID로 ACTIVE 상품 단건 조회")
     void findById_returnsActiveProduct() {
         // given
-        productJpaRepository.save(EntityFixture.activeProduct(1L));
+        productJpaRepository.save(ProductEntityFixture.active(1L));
 
         // when
         Optional<Product> result = productRepository.findById(1L);
@@ -99,7 +99,7 @@ class ProductRepositoryImplTest {
     @DisplayName("DELETED 상태 상품은 단건 조회에서 제외")
     void findById_excludesDeletedProduct() {
         // given
-        productJpaRepository.save(EntityFixture.deletedProduct(1L));
+        productJpaRepository.save(ProductEntityFixture.deleted(1L));
 
         // when
         Optional<Product> result = productRepository.findById(1L);

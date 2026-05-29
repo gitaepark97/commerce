@@ -28,6 +28,7 @@ CREATE TABLE product_option
     sales_price      DECIMAL(19, 2) NOT NULL,
     discounted_price DECIMAL(19, 2) NOT NULL,
     stock_quantity   INT            NOT NULL,
+    sort_order       INT            NOT NULL,
     PRIMARY KEY (id)
 ) ENGINE = InnoDB;
 
@@ -43,6 +44,9 @@ CREATE TABLE product_section
     sort_order INT         NOT NULL,
     PRIMARY KEY (id)
 ) ENGINE = InnoDB;
+
+CREATE INDEX idx_product_option_lookup ON product_option (product_id, status, sort_order);
+CREATE INDEX idx_product_section_lookup ON product_section (product_id, status, sort_order);
 
 CREATE TABLE product_category
 (

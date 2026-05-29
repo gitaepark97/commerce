@@ -1,7 +1,8 @@
 package com.hugo.commerce.infra.storage;
 
 import com.hugo.commerce.domain.port.ProductCategoryRepository;
-import com.hugo.commerce.infra.storage.fixture.EntityFixture;
+import com.hugo.commerce.infra.storage.fixture.ProductCategoryEntityFixture;
+import com.hugo.commerce.infra.storage.fixture.ProductEntityFixture;
 import com.hugo.commerce.infra.storage.repository.ProductCategoryJpaRepository;
 import com.hugo.commerce.infra.storage.repository.ProductJpaRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -30,8 +31,8 @@ class ProductCategoryRepositoryImplTest {
         // given
         Long categoryId = 1L;
         for (long i = 1; i <= 3; i++) {
-            productJpaRepository.save(EntityFixture.activeProduct(i));
-            productCategoryJpaRepository.save(EntityFixture.activeCategory(i, i, categoryId));
+            productJpaRepository.save(ProductEntityFixture.active(i));
+            productCategoryJpaRepository.save(ProductCategoryEntityFixture.active(i, i, categoryId));
         }
 
         // when
@@ -48,8 +49,8 @@ class ProductCategoryRepositoryImplTest {
         // given
         Long categoryId = 1L;
         for (long i = 1; i <= 4; i++) {
-            productJpaRepository.save(EntityFixture.activeProduct(i));
-            productCategoryJpaRepository.save(EntityFixture.activeCategory(i * 100, i, categoryId));
+            productJpaRepository.save(ProductEntityFixture.active(i));
+            productCategoryJpaRepository.save(ProductCategoryEntityFixture.active(i * 100, i, categoryId));
         }
 
         // when
@@ -64,10 +65,10 @@ class ProductCategoryRepositoryImplTest {
     void findProductIdsByCategoryId_excludesDeletedMappings() {
         // given
         Long categoryId = 1L;
-        productJpaRepository.save(EntityFixture.activeProduct(1L));
-        productJpaRepository.save(EntityFixture.activeProduct(2L));
-        productCategoryJpaRepository.save(EntityFixture.activeCategory(1L, 1L, categoryId));
-        productCategoryJpaRepository.save(EntityFixture.deletedCategory(2L, 2L, categoryId));
+        productJpaRepository.save(ProductEntityFixture.active(1L));
+        productJpaRepository.save(ProductEntityFixture.active(2L));
+        productCategoryJpaRepository.save(ProductCategoryEntityFixture.active(1L, 1L, categoryId));
+        productCategoryJpaRepository.save(ProductCategoryEntityFixture.deleted(2L, 2L, categoryId));
 
         // when
         List<Long> result = productCategoryRepository.findProductIdsByCategoryId(categoryId, null, 10);

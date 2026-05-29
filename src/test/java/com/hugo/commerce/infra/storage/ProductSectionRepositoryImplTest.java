@@ -2,7 +2,8 @@ package com.hugo.commerce.infra.storage;
 
 import com.hugo.commerce.domain.model.ProductSection;
 import com.hugo.commerce.domain.port.ProductSectionRepository;
-import com.hugo.commerce.infra.storage.fixture.EntityFixture;
+import com.hugo.commerce.infra.storage.fixture.ProductEntityFixture;
+import com.hugo.commerce.infra.storage.fixture.ProductSectionEntityFixture;
 import com.hugo.commerce.infra.storage.repository.ProductJpaRepository;
 import com.hugo.commerce.infra.storage.repository.ProductSectionJpaRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -29,10 +30,10 @@ class ProductSectionRepositoryImplTest {
     @DisplayName("상품 ID로 ACTIVE 섹션을 sortOrder 오름차순으로 반환")
     void findByProductId_returnsSectionsInSortOrder() {
         // given
-        productJpaRepository.save(EntityFixture.activeProduct(1L));
-        productSectionJpaRepository.save(EntityFixture.activeSection(1L, 1L, 2));
-        productSectionJpaRepository.save(EntityFixture.activeSection(2L, 1L, 1));
-        productSectionJpaRepository.save(EntityFixture.activeSection(3L, 1L, 3));
+        productJpaRepository.save(ProductEntityFixture.active(1L));
+        productSectionJpaRepository.save(ProductSectionEntityFixture.active(1L, 1L, 2));
+        productSectionJpaRepository.save(ProductSectionEntityFixture.active(2L, 1L, 1));
+        productSectionJpaRepository.save(ProductSectionEntityFixture.active(3L, 1L, 3));
 
         // when
         List<ProductSection> result = productSectionRepository.findByProductId(1L);
@@ -47,9 +48,9 @@ class ProductSectionRepositoryImplTest {
     @DisplayName("DELETED 상태 섹션은 조회에서 제외")
     void findByProductId_excludesDeletedSections() {
         // given
-        productJpaRepository.save(EntityFixture.activeProduct(1L));
-        productSectionJpaRepository.save(EntityFixture.activeSection(1L, 1L, 1));
-        productSectionJpaRepository.save(EntityFixture.deletedSection(2L, 1L, 2));
+        productJpaRepository.save(ProductEntityFixture.active(1L));
+        productSectionJpaRepository.save(ProductSectionEntityFixture.active(1L, 1L, 1));
+        productSectionJpaRepository.save(ProductSectionEntityFixture.deleted(2L, 1L, 2));
 
         // when
         List<ProductSection> result = productSectionRepository.findByProductId(1L);

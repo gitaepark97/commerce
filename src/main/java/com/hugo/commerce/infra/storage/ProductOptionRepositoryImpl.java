@@ -18,7 +18,7 @@ public class ProductOptionRepositoryImpl implements ProductOptionRepository {
 
     @Override
     public List<ProductOption> findByProductId(Long productId) {
-        return productOptionJpaRepository.findByProductIdAndStatus(productId, EntityStatus.ACTIVE)
+        return productOptionJpaRepository.findByProductIdAndStatusOrderBySortOrderAsc(productId, EntityStatus.ACTIVE)
             .stream()
             .map(ProductOptionEntity::toDomain)
             .toList();

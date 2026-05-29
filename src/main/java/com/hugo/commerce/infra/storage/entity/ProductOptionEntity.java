@@ -31,6 +31,9 @@ public class ProductOptionEntity extends BaseEntity {
     @Column(nullable = false)
     private int stockQuantity;
 
+    @Column(nullable = false)
+    private int sortOrder;
+
     public ProductOption toDomain() {
         return new ProductOption(id, productId, name, description, price.toDomain(), stockQuantity);
     }

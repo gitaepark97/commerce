@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface ProductOptionJpaRepository extends JpaRepository<ProductOptionEntity, Long> {
 
-    List<ProductOptionEntity> findByProductIdAndStatus(Long productId, EntityStatus status);
+    List<ProductOptionEntity> findByProductIdAndStatusOrderBySortOrderAsc(Long productId, EntityStatus status);
 
 }
