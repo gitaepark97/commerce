@@ -18,7 +18,7 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
         return parameter.getParameterType().equals(User.class);
     }
 
-    static final String USER_ID_HEADER = "Commerce-User-Id";
+    public static final String USER_ID_HEADER = "Commerce-User-Id";
 
     @Override
     public @Nullable Object resolveArgument(
