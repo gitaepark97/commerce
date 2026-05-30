@@ -65,7 +65,7 @@ class ProductRepositoryImplTest {
 
         // then
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).id()).isEqualTo(1L);
+        assertThat(result.getFirst().id()).isEqualTo(1L);
     }
 
     @Test

@@ -3,6 +3,8 @@ package com.hugo.commerce.domain.application;
 import com.hugo.commerce.domain.enums.ProductStatus;
 import com.hugo.commerce.domain.model.Product;
 import com.hugo.commerce.domain.model.ProductDetail;
+import com.hugo.commerce.domain.model.ProductOption;
+import com.hugo.commerce.domain.model.ProductOptionDetail;
 import com.hugo.commerce.domain.port.ProductCategoryRepository;
 import com.hugo.commerce.domain.port.ProductOptionRepository;
 import com.hugo.commerce.domain.port.ProductRepository;
@@ -13,6 +15,7 @@ import com.hugo.commerce.support.error.CoreException;
 import com.hugo.commerce.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -20,8 +23,9 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Component
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
+@Component
 class ProductFinder {
 
     private final ProductRepository productRepository;
@@ -29,9 +33,8 @@ class ProductFinder {
     private final ProductOptionRepository productOptionRepository;
     private final ProductSectionRepository productSectionRepository;
 
-    Page<Product> findProductsByCategoryId(Long categoryId, PageParam pageParam) {
+    Page<Product> findProducts(Long categoryId, PageParam pageParam) {
         // 카테고리-상품 관계 테이블 기준으로 페이지를 잘라야 hasNext가 정확하므로 ID 조회를 분리
-        // COUNT 쿼리 없이 다음 페이지 존재 여부를 판단하기 위해 1개 더 조회
         var productIds = productCategoryRepository.findProductIdsByCategoryId(
             categoryId, pageParam.cursor(), pageParam.size() + 1
         );
@@ -52,7 +55,7 @@ class ProductFinder {
         return new Page<>(products, hasNext);
     }
 
-    ProductDetail findProductById(Long id) {
+    ProductDetail findProduct(Long id) {
         var product = productRepository.findById(id)
             .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND));
 
@@ -64,6 +67,30 @@ class ProductFinder {
         var sections = productSectionRepository.findByProductId(id);
 
         return new ProductDetail(product, options, sections);
+    }
+
+    ProductOption findProductOption(Long optionId) {
+        return productOptionRepository.findById(optionId)
+            .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND));
+    }
+
+    List<ProductOptionDetail> findProductOptionDetails(List<Long> optionIds) {
+        var options = productOptionRepository.findByIds(optionIds)
+            .stream()
+            .collect(Collectors.toMap(ProductOption::id, Function.identity()));
+
+        var productIds = options.values().stream()
+            .map(ProductOption::productId)
+            .collect(Collectors.toSet());
+        var products = productRepository.findByIds(productIds).stream()
+            .collect(Collectors.toMap(Product::id, Function.identity()));
+
+        return optionIds.stream()
+            .filter(options::containsKey)
+            .map(options::get)
+            .filter(option -> products.containsKey(option.productId()))
+            .map(option -> new ProductOptionDetail(products.get(option.productId()), option))
+            .toList();
     }
 
 }

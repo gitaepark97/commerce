@@ -10,7 +10,11 @@ import com.hugo.commerce.domain.fixture.ProductOptionFixture;
 import com.hugo.commerce.domain.fixture.ProductSectionFixture;
 import com.hugo.commerce.domain.model.Product;
 import com.hugo.commerce.domain.model.ProductDetail;
+import com.hugo.commerce.domain.model.ProductOption;
+import com.hugo.commerce.domain.model.ProductOptionDetail;
 import com.hugo.commerce.support.Page;
+
+import java.util.List;
 import com.hugo.commerce.support.PageParam;
 import com.hugo.commerce.support.error.CoreException;
 import com.hugo.commerce.support.error.ErrorType;
@@ -56,7 +60,7 @@ class ProductFinderTest {
         productCategoryRepository.save(categoryId, 2L);
 
         // when
-        Page<Product> result = productFinder.findProductsByCategoryId(categoryId, new PageParam(null, 10));
+        Page<Product> result = productFinder.findProducts(categoryId, new PageParam(null, 10));
 
         // then
         assertThat(result.content()).containsExactly(product1, product2);
@@ -74,7 +78,7 @@ class ProductFinderTest {
         }
 
         // when
-        Page<Product> result = productFinder.findProductsByCategoryId(categoryId, new PageParam(null, 2));
+        Page<Product> result = productFinder.findProducts(categoryId, new PageParam(null, 2));
 
         // then
         assertThat(result.content()).hasSize(2);
@@ -85,7 +89,7 @@ class ProductFinderTest {
     @DisplayName("카테고리에 상품이 없으면 빈 목록 반환")
     void returnsEmptyList_whenCategoryHasNoProducts() {
         // when
-        Page<Product> result = productFinder.findProductsByCategoryId(1L, new PageParam(null, 10));
+        Page<Product> result = productFinder.findProducts(1L, new PageParam(null, 10));
 
         // then
         assertThat(result.content()).isEmpty();
@@ -103,7 +107,7 @@ class ProductFinderTest {
         }
 
         // when
-        Page<Product> result = productFinder.findProductsByCategoryId(categoryId, new PageParam(2L, 10));
+        Page<Product> result = productFinder.findProducts(categoryId, new PageParam(2L, 10));
 
         // then
         assertThat(result.content()).extracting(Product::id).containsExactly(3L, 4L);
@@ -121,7 +125,7 @@ class ProductFinderTest {
         productSectionRepository.save(productId, ProductSectionFixture.create(ProductSectionType.IMAGE));
 
         // when
-        ProductDetail result = productFinder.findProductById(productId);
+        ProductDetail result = productFinder.findProduct(productId);
 
         // then
         assertThat(result.product()).isEqualTo(product);
@@ -137,7 +141,7 @@ class ProductFinderTest {
         productRepository.save(product);
 
         // when
-        ProductDetail result = productFinder.findProductById(1L);
+        ProductDetail result = productFinder.findProduct(1L);
 
         // then
         assertThat(result.product()).isEqualTo(product);
@@ -149,7 +153,7 @@ class ProductFinderTest {
     @DisplayName("존재하지 않는 상품 ID로 조회하면 NOT_FOUND 예외 발생")
     void throwsNotFound_whenProductDoesNotExist() {
         // when & then
-        assertThatThrownBy(() -> productFinder.findProductById(999L))
+        assertThatThrownBy(() -> productFinder.findProduct(999L))
             .isInstanceOf(CoreException.class)
             .satisfies(e -> assertThat(((CoreException) e).getErrorType()).isEqualTo(ErrorType.NOT_FOUND));
     }
@@ -165,7 +169,7 @@ class ProductFinderTest {
         productCategoryRepository.save(categoryId, 2L);
 
         // when
-        Page<Product> result = productFinder.findProductsByCategoryId(categoryId, new PageParam(null, 10));
+        Page<Product> result = productFinder.findProducts(categoryId, new PageParam(null, 10));
 
         // then
         assertThat(result.content()).extracting(Product::id).containsExactly(1L);
@@ -178,8 +182,74 @@ class ProductFinderTest {
         productRepository.save(ProductFixture.inactive(1L));
 
         // when & then
-        assertThatThrownBy(() -> productFinder.findProductById(1L))
+        assertThatThrownBy(() -> productFinder.findProduct(1L))
             .isInstanceOf(CoreException.class)
             .satisfies(e -> assertThat(((CoreException) e).getErrorType()).isEqualTo(ErrorType.PRODUCT_UNAVAILABLE));
+    }
+
+    @Test
+    @DisplayName("옵션 ID로 옵션 단건 반환")
+    void returnsProductOption_whenOptionExists() {
+        // given
+        productOptionRepository.save(1L, ProductOptionFixture.create(1L, 1L));
+
+        // when
+        ProductOption result = productFinder.findProductOption(1L);
+
+        // then
+        assertThat(result.id()).isEqualTo(1L);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 옵션 ID로 조회하면 NOT_FOUND 예외 발생")
+    void throwsNotFound_whenProductOptionDoesNotExist() {
+        // when & then
+        assertThatThrownBy(() -> productFinder.findProductOption(999L))
+            .isInstanceOf(CoreException.class)
+            .satisfies(e -> assertThat(((CoreException) e).getErrorType()).isEqualTo(ErrorType.NOT_FOUND));
+    }
+
+    @Test
+    @DisplayName("옵션 ID 목록으로 옵션 상세 정보 반환")
+    void returnsProductOptionDetails_whenOptionsAndProductsExist() {
+        // given
+        productRepository.save(ProductFixture.create(1L));
+        productOptionRepository.save(1L, ProductOptionFixture.create(1L, 1L));
+        productOptionRepository.save(1L, ProductOptionFixture.create(2L, 1L));
+
+        // when
+        List<ProductOptionDetail> result = productFinder.findProductOptionDetails(List.of(1L, 2L));
+
+        // then
+        assertThat(result).hasSize(2);
+        assertThat(result).extracting(d -> d.option().id()).containsExactly(1L, 2L);
+    }
+
+    @Test
+    @DisplayName("옵션은 있지만 상품이 없으면 해당 옵션은 결과에서 제외")
+    void excludesOptionDetail_whenProductDoesNotExist() {
+        // given
+        productOptionRepository.save(1L, ProductOptionFixture.create(1L, 1L));
+
+        // when
+        List<ProductOptionDetail> result = productFinder.findProductOptionDetails(List.of(1L));
+
+        // then
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 옵션 ID는 결과에서 제외")
+    void excludesMissingOptionIds_whenFindingOptionDetails() {
+        // given
+        productRepository.save(ProductFixture.create(1L));
+        productOptionRepository.save(1L, ProductOptionFixture.create(1L, 1L));
+
+        // when
+        List<ProductOptionDetail> result = productFinder.findProductOptionDetails(List.of(1L, 999L));
+
+        // then
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).option().id()).isEqualTo(1L);
     }
 }

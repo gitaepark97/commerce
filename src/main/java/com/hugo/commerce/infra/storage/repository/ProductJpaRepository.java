@@ -11,6 +11,8 @@ import java.util.Optional;
 
 public interface ProductJpaRepository extends JpaRepository<ProductEntity, Long> {
 
+    List<ProductEntity> findAllByIdInAndStatus(Collection<Long> ids, EntityStatus status);
+
     List<ProductEntity> findAllByIdInAndStatusAndProductStatusIn(Collection<Long> ids, EntityStatus status, Collection<ProductStatus> productStatuses);
 
     Optional<ProductEntity> findByIdAndStatus(Long id, EntityStatus status);
