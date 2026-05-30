@@ -10,7 +10,7 @@ record ProductOptionResponse(
     String description,
     BigDecimal salesPrice,
     BigDecimal discountedPrice,
-    int stockQuantity
+    boolean isSoldOut
 ) {
 
     static ProductOptionResponse from(ProductOption option) {
@@ -20,7 +20,7 @@ record ProductOptionResponse(
             option.description(),
             option.price().salesPrice(),
             option.price().discountedPrice(),
-            option.stockQuantity()
+            option.isSoldOut()
         );
     }
 

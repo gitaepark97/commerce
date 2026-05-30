@@ -25,3 +25,32 @@ include::{snippets}/products/detail/http-request.adoc[]
 include::{snippets}/products/detail/path-parameters.adoc[]
 include::{snippets}/products/detail/http-response.adoc[]
 include::{snippets}/products/detail/response-fields.adoc[]
+
+== 장바구니
+
+=== 장바구니 조회
+
+include::{snippets}/cart/get/http-request.adoc[]
+include::{snippets}/cart/get/http-response.adoc[]
+include::{snippets}/cart/get/response-fields.adoc[]
+
+=== 장바구니 아이템 추가
+
+include::{snippets}/cart/add-item/http-request.adoc[]
+include::{snippets}/cart/add-item/request-fields.adoc[]
+include::{snippets}/cart/add-item/http-response.adoc[]
+include::{snippets}/cart/add-item/response-fields.adoc[]
+
+=== 장바구니 아이템 수정
+
+include::{snippets}/cart/modify-item/http-request.adoc[]
+include::{snippets}/cart/modify-item/path-parameters.adoc[]
+include::{snippets}/cart/modify-item/request-fields.adoc[]
+include::{snippets}/cart/modify-item/http-response.adoc[]
+include::{snippets}/cart/modify-item/response-fields.adoc[]
+
+=== 장바구니 아이템 삭제
+
+include::{snippets}/cart/remove-item/http-request.adoc[]
+include::{snippets}/cart/remove-item/path-parameters.adoc[]
+include::{snippets}/cart/remove-item/http-response.adoc[]

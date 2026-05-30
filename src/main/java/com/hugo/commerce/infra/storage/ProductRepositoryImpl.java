@@ -20,6 +20,14 @@ public class ProductRepositoryImpl implements ProductRepository {
     private final ProductJpaRepository productJpaRepository;
 
     @Override
+    public List<Product> findByIds(Collection<Long> ids) {
+        return productJpaRepository.findAllByIdInAndStatus(ids, EntityStatus.ACTIVE)
+            .stream()
+            .map(ProductEntity::toDomain)
+            .toList();
+    }
+
+    @Override
     public List<Product> findByIds(Collection<Long> ids, Collection<ProductStatus> statuses) {
         return productJpaRepository.findAllByIdInAndStatusAndProductStatusIn(ids, EntityStatus.ACTIVE, statuses)
             .stream()

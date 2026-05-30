@@ -7,18 +7,18 @@ import com.hugo.commerce.support.PageParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-@Service
 @RequiredArgsConstructor
+@Service
 public class ProductService {
 
     private final ProductFinder productFinder;
 
     public Page<Product> getProducts(Long categoryId, PageParam pageParam) {
-        return productFinder.findProductsByCategoryId(categoryId, pageParam);
+        return productFinder.findProducts(categoryId, pageParam);
     }
 
     public ProductDetail getProduct(Long id) {
-        return productFinder.findProductById(id);
+        return productFinder.findProduct(id);
     }
 
 }

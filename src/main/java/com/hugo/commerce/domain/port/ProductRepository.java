@@ -9,6 +9,8 @@ import java.util.Optional;
 
 public interface ProductRepository {
 
+    List<Product> findByIds(Collection<Long> ids);
+
     List<Product> findByIds(Collection<Long> ids, Collection<ProductStatus> statuses);
 
     Optional<Product> findById(Long id);

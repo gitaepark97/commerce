@@ -15,6 +15,14 @@ public class FakeProductRepository implements ProductRepository {
     }
 
     @Override
+    public List<Product> findByIds(Collection<Long> ids) {
+        return ids.stream()
+            .map(store::get)
+            .filter(Objects::nonNull)
+            .toList();
+    }
+
+    @Override
     public List<Product> findByIds(Collection<Long> ids, Collection<ProductStatus> statuses) {
         return ids.stream()
             .map(store::get)
