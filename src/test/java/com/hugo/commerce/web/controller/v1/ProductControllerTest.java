@@ -136,7 +136,7 @@ class ProductControllerTest extends RestDocsSupport {
                     fieldWithPath("data.options[].description").description("옵션 설명"),
                     fieldWithPath("data.options[].salesPrice").description("옵션 판매가"),
                     fieldWithPath("data.options[].discountedPrice").description("옵션 할인가"),
-                    fieldWithPath("data.options[].stockQuantity").description("재고 수량"),
+                    fieldWithPath("data.options[].isSoldOut").description("품절 여부"),
                     fieldWithPath("data.sections[]").description("상품 섹션 목록"),
                     fieldWithPath("data.sections[].type").description("섹션 유형 (IMAGE, HTML)"),
                     fieldWithPath("data.sections[].content").description("섹션 내용"),
